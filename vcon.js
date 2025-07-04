@@ -1,4 +1,5 @@
 function runVortexCons() {
+geofs.cons = true;
 geofs.fx.Particle.prototype = {
     create: function () {
         this._currentScale = this._options.startScale;
@@ -59,21 +60,58 @@ geofs.VCONarray = [];
 var condensing = new Boolean(0);
 
 updateSourcePoints = function() {
-geofs.aircraft.instance.definition.parts.forEach(function(a, b){
-if (a.name.toLowerCase().includes("body")) {
-geofs.bodyID = b
-geofs.VCONarray = a.collisionPoints
+    let found = false;
 
-geofs.VCONarray.forEach(function(c, d){
-   if (c[0] > geofs.VCONarray[geofs.tipIndexR][0]){ geofs.tipIndexR = d; };
-   if (c[0] < geofs.VCONarray[geofs.tipIndexL][0]){ geofs.tipIndexL = d; };
-})
-	}
-})
+    geofs.aircraft.instance.definition.parts.forEach(function(part, index) {
+        if (
+            part.name &&
+            part.name.toLowerCase() === ("body") &&
+            part.collisionPoints &&
+            part.collisionPoints.length > 0 &&
+            !found
+        ) {
+            found = true;
+            geofs.bodyID = index;
+            geofs.VCONarray = part.collisionPoints;
+
+            // Reset tip indices
+            let maxX = -Infinity;
+            let minX = Infinity;
+            geofs.tipIndexR = 0;
+            geofs.tipIndexL = 0;
+
+            geofs.VCONarray.forEach(function(point, i) {
+                if (point[0] > maxX) {
+                    maxX = point[0];
+                    geofs.tipIndexR = i;
+                }
+                if (point[0] < minX) {
+                    minX = point[0];
+                    geofs.tipIndexL = i;
+                }
+            });
+
+            // console.log("✓ Found part:", part.name, "at index", index);
+            // console.log("Left tip index:", geofs.tipIndexL, "→", geofs.VCONarray[geofs.tipIndexL]);
+            // console.log("Right tip index:", geofs.tipIndexR, "→", geofs.VCONarray[geofs.tipIndexR]);
+        }
+    });
+
+    if (!found) {
+        console.warn("⚠ No usable body part with collisionPoints found.");
+    }
 }
 
+
 updateVCondensation = function() {
+	console.log("condensing:", condensing);
+// console.log("geofs.cons:", geofs.cons);
+// console.log("AOA:", geofs.animation.values.aoa);
+// console.log("G-Force:", geofs.animation.values.loadFactor);
+// console.log("Mass:", geofs.aircraft.instance.definition.mass);
+
    if (geofs.cons == true && (geofs.animation.values.aoa > 10 || geofs.animation.values.loadFactor > 4) && geofs.aircraft.instance.definition.mass > 10000 && condensing != 1) {
+	//if (true) {
 geofs.fx.vcondensationEmitterLeft = new geofs.fx.ParticleEmitter({
 				anchor: geofs.aircraft.instance.definition.parts[geofs.bodyID].collisionPoints[geofs.tipIndexL],
             duration: 1E10,
