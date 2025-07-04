@@ -104,7 +104,7 @@ updateSourcePoints = function() {
 
 
 updateVCondensation = function() {
-	console.log("condensing:", condensing);
+	//console.log("condensing:", condensing);
 // console.log("geofs.cons:", geofs.cons);
 // console.log("AOA:", geofs.animation.values.aoa);
 // console.log("G-Force:", geofs.animation.values.loadFactor);
