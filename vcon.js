@@ -110,7 +110,7 @@ updateVCondensation = function() {
 // console.log("G-Force:", geofs.animation.values.loadFactor);
 // console.log("Mass:", geofs.aircraft.instance.definition.mass);
 
-   if (geofs.cons == true && (geofs.animation.values.aoa > 10 || geofs.animation.values.loadFactor > 4) && geofs.aircraft.instance.definition.mass > 10000 && condensing != 1) {
+   if (!geofs.aircraft.instance.groundContact && geofs.animation.values.kias > 170 && geofs.cons == true && (geofs.animation.values.aoa > 10 || geofs.animation.values.loadFactor > 4) && geofs.aircraft.instance.definition.mass > 10000 && condensing != 1) {
 	//if (true) {
 geofs.fx.vcondensationEmitterLeft = new geofs.fx.ParticleEmitter({
 				anchor: geofs.aircraft.instance.definition.parts[geofs.bodyID].collisionPoints[geofs.tipIndexL],
@@ -143,7 +143,7 @@ geofs.fx.vcondensationEmitterRight = new geofs.fx.ParticleEmitter({
             texture: "whitesmoke"
 })
 condensing = 1
-   } else if (condensing == 1 && (geofs.animation.values.aoa < 10 || geofs.animation.values.loadFactor < 4 || geofs.aircraft.instance.definition.mass < 10000)) {
+   } else if (condensing == 1 && (geofs.animation.values.aoa < 10 || geofs.animation.values.loadFactor < 4 || geofs.aircraft.instance.definition.mass < 10000 || geofs.aircraft.instance.groundContact || geofs.animation.values.kias < 170)) {
 geofs.fx.vcondensationEmitterLeft.destroy()
 geofs.fx.vcondensationEmitterRight.destroy()
 condensing = 0
